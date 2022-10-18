@@ -1,61 +1,65 @@
-import { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from "react-redux";
 import { nanoid } from "nanoid";
 
 import { ContactForm } from './ContactForm/ContactForm';
 import { ContactList } from './ContactList/ContactList';
 import { Filter } from './Filter/Filter';
+import { addContact, deleteContact } from '../redux/contactsSlice';
+import { changeFilter } from '../redux/filterSlice';
 import { Message } from './App.styled';
 
 
 export function App() {
-  const [contacts, setContacts] = useState(() => JSON.parse(window.localStorage.getItem('contacts')) ?? []);
-  const [filter, setFilter] = useState('');
-  
-// локал сторидж
-  useEffect(() => {
-    window.localStorage.setItem('contacts', JSON.stringify(contacts));
-  }, [contacts]);
-  
+
+  const dispatch = useDispatch();
+  const contacts = useSelector(state => state.contacts);
+  const filter = useSelector(state => state.filter);
+  console.log(contacts);
+  // console.log(filter);
+
   // додавання контакту
-  const addContact = ({ name, number }) => {
+  const addContacts = ({ name, number }) => {
     const newContact = { id: nanoid(), name, number };
-    
+    // console.log(newContact.name);
+
     contacts.find(contact => newContact.name.toLowerCase() === contact.name.toLowerCase())
       ? alert(
         `${newContact.name} is already in the contact list`
       )
-      : setContacts(prevContacts => [newContact, ...prevContacts]);
+      : dispatch(addContact(newContact));;
       };
   
   // функція зміни стану фільтру
-  const changeFilter = e => setFilter(e.currentTarget.value);
+  const changeFilterField = e => dispatch(changeFilter(e.currentTarget.value));
 
   // фільтрує і повертає результат
   const filtredContacts = () => {
     const normalizedFilter = filter.toLowerCase();
-    return contacts.filter(({ name }) =>
-      name.toLowerCase().includes(normalizedFilter)
+    if (!filter) {
+      return contacts;
+    }
+    return contacts.filter(contact =>
+      contact.name.toLowerCase().includes(normalizedFilter),
     );
   };
 
   // видалення контакту
-  const deleteContact = contactId => {
-    setContacts(prevContacts =>
-      prevContacts.filter(contact => contact.id !== contactId));
-  };
-
-    return (
+  const deleteSelectedContact = contactId => dispatch(deleteContact(contactId));
+  // console.log(contacts.length);
+  
+  return (
+      
   <div>
       <h1>Phonebook</h1>
-       <ContactForm  onSubmit={addContact}/>
+        <ContactForm  onSubmit={addContacts}/>
 
       <h2>Contacts</h2>
-        <Filter filter={filter} changeFilter={changeFilter} />
-      {/*рендер або сповіщення в разі порожнього списку контактів  */}
+        <Filter filter={filter} changeFilter={changeFilterField} />
+      
         {contacts.length > 0 ? (
         <ContactList
           contacts={filtredContacts()}
-          onDeleteContact={deleteContact}
+          onDeleteContact={() => deleteSelectedContact()}
           />
         ) : (
             <Message>Contact list is empty</Message>
