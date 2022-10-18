@@ -14,7 +14,7 @@ export function App() {
   const dispatch = useDispatch();
   const contacts = useSelector(state => state.contacts);
   const filter = useSelector(state => state.filter);
-  console.log(contacts);
+  // console.log(contacts);
   // console.log(filter);
 
   // додавання контакту

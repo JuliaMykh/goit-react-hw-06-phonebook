@@ -8,7 +8,7 @@ import { LabelForm, SpanForm, ButtonForm } from './ContactForm.styled';
 export const ContactForm = ({onSubmit}) => {
     
     const handleSubmit = (values, { resetForm }) => {
-        // console.log(values);
+        console.log(values);
         onSubmit(values);
         resetForm();
     };
