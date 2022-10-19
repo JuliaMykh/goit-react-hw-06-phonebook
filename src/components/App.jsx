@@ -5,12 +5,13 @@ import { Message } from './App.styled';
 import { useSelector } from 'react-redux';
 
 export function App() {
-  const  contacts  = useSelector(state => state.contacts);
+  const {contacts} = useSelector(state => state.contacts);
+  
+  console.log(contacts);
 
   return (
 
     <>
-    
       <h1>Phonebook</h1>
         <ContactForm  />
 
@@ -21,7 +22,7 @@ export function App() {
         <ContactList/>
         ) : (
             <Message>Contact list is empty</Message>
-          )}
+      )}
       
     </>
 )
